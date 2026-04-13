@@ -1,0 +1,922 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>SiskoAI — The Engine That Powers Itself</title>
+<meta name="description" content="Regenerative Compute Engine. A share of every premium transaction is recycled into a free compute pool, distributed equally to every user in real time." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    /* SiskoAI Brand Blues */
+    --brand-deep:    #0a2a8c;
+    --brand-mid:     #1a56d6;
+    --brand-bright:  #2d7fff;
+    --brand-sky:     #5fb3ff;
+    --brand-ice:     #b8dcff;
+    --brand-white:   #f0f8ff;
+
+    /* Data Center Factory Light Theme */
+    --bg:            #f0f5ff;
+    --bg2:           #e4eeff;
+    --surface:       #ffffff;
+    --surface2:      #f7faff;
+    --panel-border:  #c5d8f5;
+    --panel-shadow:  rgba(26,86,214,0.10);
+
+    /* Accent / Signal Colors */
+    --cyan:          #00b8d9;
+    --cyan-glow:     rgba(0,184,217,0.18);
+    --amber:         #ff8c00;
+    --amber-glow:    rgba(255,140,0,0.15);
+    --green:         #00c48c;
+    --green-glow:    rgba(0,196,140,0.18);
+    --hot:           #e63946;
+
+    /* Text */
+    --text-primary:  #0a1e4a;
+    --text-mid:      #2d5096;
+    --text-dim:      #7a99c8;
+    --text-mono:     #1a3a6e;
+
+    --radius: 14px;
+    --measure: 65ch;
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    font-family:'Inter',system-ui,sans-serif;
+    color:var(--text-primary);
+    background:
+      radial-gradient(1200px 600px at 80% -10%, rgba(45,127,255,0.10), transparent 60%),
+      radial-gradient(900px 500px at -10% 20%, rgba(95,179,255,0.10), transparent 60%),
+      linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+    min-height:100vh;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+  a{color:var(--brand-mid);text-decoration:none}
+  a:hover{color:var(--brand-deep)}
+
+  /* ---------- Typography ---------- */
+  .display{font-family:'Fraunces',Georgia,serif;font-weight:800;color:var(--brand-deep);letter-spacing:-0.01em;line-height:1.05}
+  .mono{font-family:'JetBrains Mono',ui-monospace,monospace;color:var(--text-mono)}
+  .eyebrow{
+    font-family:'JetBrains Mono',ui-monospace,monospace;
+    font-size:12px;letter-spacing:0.12em;text-transform:uppercase;
+    color:var(--text-mono);
+    background:var(--surface2);
+    border:1px solid var(--panel-border);
+    padding:6px 12px;border-radius:999px;display:inline-block;
+  }
+  .chapter-tag{
+    font-family:'Fraunces',Georgia,serif;
+    font-weight:600;font-size:15px;letter-spacing:0.08em;text-transform:uppercase;
+    color:var(--brand-mid);
+  }
+
+  /* ---------- Layout ---------- */
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+  section{padding:96px 0;position:relative}
+  section + section{border-top:1px solid var(--panel-border)}
+
+  .term-strip{
+    font-family:'JetBrains Mono',ui-monospace,monospace;
+    font-size:11.5px;letter-spacing:0.14em;text-transform:uppercase;
+    color:var(--text-mono);
+    background:var(--surface2);
+    border-top:1px solid var(--panel-border);
+    border-bottom:1px solid var(--panel-border);
+    padding:10px 24px;
+    overflow:hidden;white-space:nowrap;
+  }
+  .term-strip span{display:inline-block;padding-right:48px;opacity:.85}
+
+  /* ---------- Nav ---------- */
+  .nav{
+    position:sticky;top:0;z-index:50;
+    backdrop-filter:saturate(140%) blur(10px);
+    -webkit-backdrop-filter:saturate(140%) blur(10px);
+    background:rgba(240,245,255,0.78);
+    border-bottom:1px solid var(--panel-border);
+  }
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;max-width:1180px;margin:0 auto;gap:16px}
+  .brand{font-family:'JetBrains Mono',ui-monospace,monospace;font-weight:700;letter-spacing:0.18em;color:var(--brand-deep)}
+  .nav-links{display:flex;gap:22px;flex-wrap:wrap}
+  .nav-links a{color:var(--text-mid);font-size:14px;font-weight:500}
+  .nav-links a:hover{color:var(--brand-deep)}
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:'Inter',sans-serif;font-weight:600;font-size:14px;
+    padding:10px 18px;border-radius:999px;
+    border:1px solid transparent;cursor:pointer;transition:all .2s ease;
+    text-decoration:none;white-space:nowrap;
+  }
+  .btn-primary{background:var(--brand-bright);color:#fff;box-shadow:0 6px 16px rgba(45,127,255,0.32)}
+  .btn-primary:hover{background:var(--brand-mid);color:#fff;transform:translateY(-1px)}
+  .btn-ghost{background:transparent;color:var(--brand-mid);border-color:var(--brand-mid)}
+  .btn-ghost:hover{background:var(--brand-ice);color:var(--brand-deep)}
+
+  /* ---------- Hero ---------- */
+  .hero{position:relative;padding:120px 0 96px;overflow:hidden}
+  .hero::before{
+    content:"";position:absolute;inset:0;z-index:0;
+    background-image:
+      linear-gradient(var(--panel-border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--panel-border) 1px, transparent 1px);
+    background-size: 48px 48px;
+    opacity:.35;
+    mask-image: radial-gradient(ellipse 70% 70% at 50% 30%, #000 40%, transparent 80%);
+    -webkit-mask-image: radial-gradient(ellipse 70% 70% at 50% 30%, #000 40%, transparent 80%);
+  }
+  .hero-inner{position:relative;z-index:1}
+  .hero h1{
+    font-size:clamp(44px, 7.2vw, 108px);
+    margin:24px 0 28px;
+    max-width:16ch;
+  }
+  .hero h1 .line{display:block}
+  .hero .lede{
+    font-size:clamp(17px, 1.6vw, 21px);
+    color:var(--text-mid);
+    max-width:62ch;margin:0 0 40px;
+  }
+  .hero-ctas{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:56px}
+
+  .hero-stats{
+    display:grid;grid-template-columns:repeat(4, 1fr);gap:16px;
+    background:var(--surface);
+    border:1px solid var(--panel-border);
+    border-radius:var(--radius);
+    padding:22px;
+    box-shadow:0 10px 30px var(--panel-shadow);
+  }
+  .hero-stats .stat{padding:6px 12px}
+  .hero-stats .n{font-family:'Fraunces',serif;font-weight:800;font-size:34px;color:var(--brand-deep);letter-spacing:-0.02em}
+  .hero-stats .l{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.12em;margin-top:4px}
+
+  .hero-chips{
+    display:flex;flex-wrap:wrap;gap:10px;margin-top:28px;
+  }
+  .chip{
+    font-family:'JetBrains Mono',monospace;font-size:11.5px;
+    letter-spacing:0.12em;text-transform:uppercase;
+    padding:7px 12px;border-radius:999px;
+    border:1px solid var(--panel-border);background:var(--surface);
+    color:var(--text-mono);
+    display:inline-flex;align-items:center;gap:8px;
+  }
+  .chip .dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 0 4px var(--green-glow)}
+  .chip.amber .dot{background:var(--amber);box-shadow:0 0 0 4px var(--amber-glow)}
+  .chip.cyan .dot{background:var(--cyan);box-shadow:0 0 0 4px var(--cyan-glow)}
+  .chip.pulse .dot{animation:breathe 2.4s ease-in-out infinite}
+
+  @keyframes breathe{
+    0%,100%{box-shadow:0 0 0 4px var(--green-glow)}
+    50%{box-shadow:0 0 0 10px rgba(0,196,140,0.04)}
+  }
+
+  /* ---------- Chapter header ---------- */
+  .chapter-head{max-width:960px;margin:0 0 48px}
+  .chapter-head .num{font-family:'Fraunces',serif;font-weight:600;font-size:14px;letter-spacing:0.2em;text-transform:uppercase;color:var(--brand-mid)}
+  .chapter-head h2{
+    font-family:'Fraunces',serif;font-weight:800;color:var(--brand-deep);
+    font-size:clamp(34px, 4.4vw, 56px);line-height:1.08;margin:10px 0 16px;letter-spacing:-0.01em;
+  }
+  .chapter-head p{color:var(--text-mid);font-size:18px;max-width:var(--measure)}
+
+  /* ---------- Narrative cards (Chapter 01) ---------- */
+  .narr{display:grid;gap:24px}
+  .narr-card{
+    background:var(--surface);border:1px solid var(--panel-border);
+    border-radius:var(--radius);padding:40px;box-shadow:0 6px 20px var(--panel-shadow);
+  }
+  .narr-card .kicker{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:var(--brand-mid)}
+  .narr-card h3{font-family:'Fraunces',serif;font-weight:800;color:var(--brand-deep);font-size:28px;line-height:1.15;margin:8px 0 18px}
+  .narr-card p{color:var(--text-primary);max-width:var(--measure);margin:0 0 14px;font-size:17px}
+  .narr-card p:last-child{margin-bottom:0}
+  .narr-card .callout{
+    margin-top:20px;padding:16px 20px;border-left:3px solid var(--brand-bright);
+    background:var(--brand-white);border-radius:0 10px 10px 0;color:var(--brand-deep);
+    font-family:'Fraunces',serif;font-weight:600;font-size:18px;
+  }
+
+  /* ---------- Chapter 02 loop ---------- */
+  .layers{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:36px}
+  .layer{
+    background:var(--surface);border:1px solid var(--panel-border);border-radius:var(--radius);
+    padding:24px;box-shadow:0 6px 20px var(--panel-shadow);position:relative;
+  }
+  .layer .badge{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--brand-mid)}
+  .layer h4{font-family:'Fraunces',serif;font-weight:800;font-size:22px;color:var(--brand-deep);margin:6px 0 10px;line-height:1.15}
+  .formula{
+    font-family:'JetBrains Mono',monospace;font-size:13.5px;color:var(--text-mono);
+    background:var(--surface2);border:1px dashed var(--panel-border);
+    padding:10px 12px;border-radius:10px;margin:10px 0 12px;overflow-x:auto;white-space:nowrap;
+  }
+  .layer p{font-size:14.5px;color:var(--text-mid);margin:0}
+
+  .alloc{
+    background:var(--surface);border:1px solid var(--panel-border);border-radius:var(--radius);
+    padding:22px 24px;box-shadow:0 6px 20px var(--panel-shadow);margin-bottom:36px;
+  }
+  .alloc .row{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text-mono)}
+  .bars{display:flex;height:14px;border-radius:999px;overflow:hidden;margin-top:12px;border:1px solid var(--panel-border)}
+  .bars .b1{flex:2;background:var(--brand-sky)}
+  .bars .b2{flex:1;background:var(--amber)}
+  .bars .b3{flex:1;background:var(--green)}
+  .alloc .legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:10px;font-size:12px;color:var(--text-mid)}
+  .alloc .legend i{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:6px;vertical-align:middle}
+
+  .cycle{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+  .step{
+    background:var(--surface);border:1px solid var(--panel-border);border-radius:12px;padding:16px;
+    box-shadow:0 4px 14px var(--panel-shadow);position:relative;
+  }
+  .step .n{font-family:'Fraunces',serif;font-weight:800;font-size:28px;color:var(--brand-bright);line-height:1}
+  .step h5{font-family:'Inter',sans-serif;font-weight:700;font-size:14px;margin:10px 0 4px;color:var(--brand-deep)}
+  .step p{font-size:12.5px;color:var(--text-mid);margin:0}
+
+  /* ---------- Chapter 03 formulas ---------- */
+  .formulas{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+  .fcard{
+    background:var(--surface);border:1px solid var(--panel-border);border-radius:var(--radius);
+    padding:22px;box-shadow:0 6px 20px var(--panel-shadow);
+  }
+  .fcard .k{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--brand-mid)}
+  .fcard h4{font-family:'Fraunces',serif;font-weight:800;font-size:20px;color:var(--brand-deep);margin:6px 0 10px}
+  .fcard .eq{
+    font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--text-mono);
+    background:var(--brand-white);border:1px solid var(--panel-border);
+    padding:12px 14px;border-radius:10px;overflow-x:auto;white-space:nowrap;
+  }
+  .fcard p{font-size:14px;color:var(--text-mid);margin:12px 0 0}
+
+  .gates{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:28px}
+  .gate{
+    background:var(--surface);border:2px solid var(--panel-border);border-radius:var(--radius);
+    padding:20px;box-shadow:0 6px 20px var(--panel-shadow);position:relative;
+  }
+  .gate.free{border-color:var(--green);box-shadow:0 0 0 6px var(--green-glow), 0 6px 20px var(--panel-shadow)}
+  .gate.credit{border-color:var(--amber);box-shadow:0 0 0 6px var(--amber-glow), 0 6px 20px var(--panel-shadow)}
+  .gate.rate{border-color:var(--hot);box-shadow:0 0 0 6px rgba(230,57,70,0.12), 0 6px 20px var(--panel-shadow)}
+  .gate h5{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.16em;text-transform:uppercase;margin:0 0 10px}
+  .gate.free h5{color:var(--green)}
+  .gate.credit h5{color:var(--amber)}
+  .gate.rate h5{color:var(--hot)}
+  .gate p{font-size:14px;color:var(--text-primary);margin:0 0 12px}
+  .gate .tick{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--text-mid);letter-spacing:0.1em}
+
+  /* ---------- Chapter 04 pool ---------- */
+  .pool{display:grid;grid-template-columns:1.2fr 1fr;gap:28px;align-items:stretch}
+  .pool-stats{display:grid;grid-template-rows:repeat(3,1fr);gap:18px}
+  .pstat{
+    background:var(--surface);border:1px solid var(--panel-border);border-radius:var(--radius);
+    padding:26px;box-shadow:0 6px 20px var(--panel-shadow);
+  }
+  .pstat .n{
+    font-family:'Fraunces',serif;font-weight:800;font-size:clamp(44px,5vw,64px);
+    color:var(--brand-deep);letter-spacing:-0.03em;line-height:1;
+    text-shadow:0 0 24px var(--cyan-glow);
+    animation:poolpulse 3.6s ease-in-out infinite;
+  }
+  .pstat .lbl{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-mid);margin-top:6px}
+  @keyframes poolpulse{
+    0%,100%{text-shadow:0 0 20px var(--cyan-glow)}
+    50%{text-shadow:0 0 40px rgba(0,184,217,0.32)}
+  }
+  .pool-vis{
+    background:var(--surface);border:1px solid var(--panel-border);border-radius:var(--radius);
+    padding:26px;box-shadow:0 6px 20px var(--panel-shadow);display:flex;flex-direction:column;
+  }
+  .pool-vis h4{font-family:'Fraunces',serif;font-weight:800;color:var(--brand-deep);font-size:22px;margin:0 0 14px}
+  .pool-bar{
+    flex:1;min-height:220px;border:1px solid var(--panel-border);border-radius:12px;overflow:hidden;
+    display:flex;flex-direction:column-reverse;background:var(--brand-white);position:relative;
+  }
+  .pool-bar .fill{height:91.5%;background:linear-gradient(180deg, var(--brand-bright), var(--brand-sky));position:relative}
+  .pool-bar .used{height:8.5%;background:repeating-linear-gradient(45deg, var(--brand-ice), var(--brand-ice) 6px, var(--brand-white) 6px, var(--brand-white) 12px)}
+  .pool-bar .pct{
+    position:absolute;top:10px;right:12px;
+    font-family:'JetBrains Mono',monospace;font-size:13px;color:#fff;font-weight:700;letter-spacing:0.08em;
+  }
+  .pool-legend{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--text-mid)}
+  .pool-legend b{display:block;color:var(--brand-deep);font-size:13px;margin-top:2px}
+
+  /* ---------- Chapter 05 benefits ---------- */
+  .paths{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .path{
+    background:var(--surface);border:1px solid var(--panel-border);border-radius:var(--radius);
+    padding:28px;box-shadow:0 6px 20px var(--panel-shadow);display:flex;flex-direction:column;
+  }
+  .path .ico{font-size:32px;line-height:1;margin-bottom:12px}
+  .path h3{font-family:'Fraunces',serif;font-weight:800;color:var(--brand-deep);font-size:24px;line-height:1.15;margin:0 0 14px}
+  .path h3 span{display:block;color:var(--brand-mid);font-weight:600;font-size:16px;margin-top:4px}
+  .path p{color:var(--text-mid);font-size:15px;margin:0 0 18px}
+  .path ul{list-style:none;padding:0;margin:0;display:grid;gap:10px}
+  .path li{font-size:14px;color:var(--text-primary);display:grid;grid-template-columns:22px 1fr;gap:8px;align-items:start}
+  .path li::before{content:"✓";color:var(--green);font-weight:700}
+
+  /* ---------- Chapter 06 compare ---------- */
+  .compare{
+    background:var(--surface);border:1px solid var(--panel-border);border-radius:var(--radius);
+    box-shadow:0 6px 20px var(--panel-shadow);overflow:hidden;
+  }
+  table.cmp{width:100%;border-collapse:collapse;font-size:14.5px}
+  table.cmp th, table.cmp td{padding:16px 20px;text-align:left;border-bottom:1px solid var(--panel-border);vertical-align:top}
+  table.cmp thead th{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-mid);background:var(--surface2)}
+  table.cmp thead th.good{color:#fff;background:var(--brand-bright)}
+  table.cmp td.good{background:var(--brand-ice);color:var(--brand-deep);font-weight:600}
+  table.cmp td.legacy{color:var(--text-mid)}
+  table.cmp td.prop{font-weight:600;color:var(--brand-deep);background:var(--surface2)}
+
+  /* ---------- Chapter 07 production ---------- */
+  .artifacts{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:28px}
+  .art{
+    background:var(--surface);border:1px solid var(--panel-border);border-radius:12px;
+    padding:16px;box-shadow:0 4px 14px var(--panel-shadow);
+  }
+  .art .ico{font-size:22px}
+  .art .nm{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--text-mono);margin-top:8px;word-break:break-all}
+  .art .st{
+    display:inline-flex;align-items:center;gap:6px;margin-top:10px;
+    font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;
+    color:var(--green);background:var(--green-glow);padding:4px 8px;border-radius:999px;
+  }
+  .art .st .dot{width:6px;height:6px;border-radius:50%;background:var(--green)}
+
+  pre.code{
+    background:var(--brand-white);border:1px solid var(--panel-border);border-radius:var(--radius);
+    padding:22px;overflow:auto;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text-mono);
+    box-shadow:0 6px 20px var(--panel-shadow);line-height:1.6;
+  }
+  pre.code .c{color:var(--text-dim)}
+  pre.code .k{color:var(--brand-mid)}
+  pre.code .s{color:var(--green)}
+
+  .monitor-link{display:inline-flex;align-items:center;gap:8px;margin-top:20px;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--brand-mid);font-weight:600}
+  .monitor-link:hover{color:var(--brand-deep)}
+
+  /* ---------- Enrollment CTA ---------- */
+  .enroll{
+    background:
+      radial-gradient(900px 400px at 20% 10%, rgba(45,127,255,0.14), transparent 60%),
+      radial-gradient(700px 400px at 90% 80%, rgba(0,184,217,0.12), transparent 60%),
+      linear-gradient(180deg, var(--brand-white), var(--bg));
+    border-radius:var(--radius);
+    border:1px solid var(--panel-border);
+    padding:64px 48px;box-shadow:0 12px 40px var(--panel-shadow);
+    text-align:center;
+  }
+  .enroll h2{font-family:'Fraunces',serif;font-weight:800;color:var(--brand-deep);font-size:clamp(30px, 4vw, 48px);line-height:1.1;margin:0 0 12px;letter-spacing:-0.01em}
+  .enroll p.lede{color:var(--text-mid);max-width:62ch;margin:0 auto 36px;font-size:17px}
+  .enroll-paths{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:36px 0}
+  .epath{
+    background:var(--surface);border:1px solid var(--panel-border);border-radius:12px;padding:22px;text-align:left;
+    box-shadow:0 4px 14px var(--panel-shadow);
+  }
+  .epath .ico{font-size:24px}
+  .epath .k{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--brand-mid);margin-top:6px}
+  .epath h4{font-family:'Fraunces',serif;font-weight:800;color:var(--brand-deep);font-size:20px;margin:6px 0 8px;line-height:1.2}
+  .epath p{color:var(--text-mid);font-size:14px;margin:0 0 14px}
+  .epath a{font-weight:600;color:var(--brand-mid)}
+  .enroll-btn{font-size:15px;padding:14px 22px}
+  .trust{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:28px}
+
+  /* ---------- Footer ---------- */
+  footer{border-top:1px solid var(--panel-border);background:var(--surface2);padding:40px 0;margin-top:24px}
+  .foot-inner{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center}
+  .foot-links{display:flex;gap:22px;flex-wrap:wrap}
+  .foot-links a{color:var(--text-mid);font-size:14px}
+  .copy{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-dim)}
+
+  /* ---------- Reveal animations ---------- */
+  .reveal{opacity:0;transform:translateY(16px);transition:opacity .8s ease, transform .8s ease}
+  .reveal.in{opacity:1;transform:none}
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 1020px){
+    .hero-stats{grid-template-columns:repeat(2,1fr)}
+    .layers{grid-template-columns:1fr}
+    .cycle{grid-template-columns:repeat(3,1fr)}
+    .formulas{grid-template-columns:1fr}
+    .gates{grid-template-columns:1fr}
+    .pool{grid-template-columns:1fr}
+    .paths{grid-template-columns:1fr}
+    .enroll-paths{grid-template-columns:1fr}
+    .artifacts{grid-template-columns:repeat(2,1fr)}
+  }
+  @media (max-width: 640px){
+    .nav-links{display:none}
+    section{padding:64px 0}
+    .cycle{grid-template-columns:1fr 1fr}
+    .hero-stats{grid-template-columns:1fr 1fr}
+    .narr-card{padding:26px}
+    .enroll{padding:40px 22px}
+    table.cmp thead{display:none}
+    table.cmp, table.cmp tbody, table.cmp tr, table.cmp td{display:block;width:100%}
+    table.cmp tr{border-bottom:1px solid var(--panel-border);padding:10px 0}
+    table.cmp td{border:none;padding:6px 16px}
+    table.cmp td.prop{background:transparent;font-size:12px;color:var(--brand-mid);letter-spacing:0.12em;text-transform:uppercase}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .reveal{opacity:1;transform:none;transition:none}
+    .pstat .n{animation:none;text-shadow:none}
+    .chip.pulse .dot{animation:none}
+  }
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<header class="nav" aria-label="Primary">
+  <div class="nav-inner">
+    <div class="brand">SISKOAI</div>
+    <nav class="nav-links" aria-label="Section">
+      <a href="#concept">The Concept</a>
+      <a href="#loop">The Loop</a>
+      <a href="#math">The Math</a>
+      <a href="#pool">Live Pool</a>
+      <a href="#benefits">Who Benefits</a>
+      <a href="#enroll">Enroll</a>
+    </nav>
+    <a class="btn btn-primary" href="#enroll">GET STARTED →</a>
+  </div>
+</header>
+
+<!-- Hero -->
+<section class="hero" aria-labelledby="hero-title">
+  <div class="wrap hero-inner">
+    <span class="eyebrow reveal">Regenerative Compute · SiskoAI</span>
+    <h1 id="hero-title" class="display">
+      <span class="line reveal">The Engine</span>
+      <span class="line reveal">That Powers Itself.</span>
+      <span class="line reveal" style="color:var(--brand-mid)">That Pays You Back.</span>
+    </h1>
+    <p class="lede reveal">
+      Every time someone uses SiskoAI's premium compute, a share of that value is automatically recycled into a free compute pool — distributed equally to every user on the platform, in real time, without any subsidy.
+    </p>
+    <div class="hero-ctas reveal">
+      <a class="btn btn-primary" href="#enroll">Join the Ecosystem →</a>
+      <a class="btn btn-ghost" href="#loop">How It Works</a>
+    </div>
+
+    <div class="hero-stats reveal" role="group" aria-label="Platform status">
+      <div class="stat"><div class="n">100%</div><div class="l">Self-Funded</div></div>
+      <div class="stat"><div class="n">Live</div><div class="l">In Production</div></div>
+      <div class="stat"><div class="n">Real-Time</div><div class="l">Pool Updates</div></div>
+      <div class="stat"><div class="n">Zero</div><div class="l">External Subsidy</div></div>
+    </div>
+
+    <div class="hero-chips reveal" aria-label="Live status chips">
+      <span class="chip pulse"><span class="dot"></span>+0.4820 PB EARNED</span>
+      <span class="chip pulse cyan"><span class="dot"></span>POOL LIVE</span>
+      <span class="chip pulse amber"><span class="dot"></span>CREATOR REWARDED</span>
+      <span class="chip pulse"><span class="dot"></span>FREE COMPUTE ACTIVE</span>
+    </div>
+  </div>
+</section>
+
+<div class="term-strip" aria-hidden="true">
+  <span>// REGENERATIVE ENGINE · ONLINE · PROCESSING BLOCKS ACCUMULATING</span>
+  <span>// POOL SYNC · OK · LAST TICK 00:00:01</span>
+  <span>// ATOMIC TRANSACTION LEDGER · CONSISTENT</span>
+</div>
+
+<!-- Chapter 01 -->
+<section id="concept" aria-labelledby="c1">
+  <div class="wrap">
+    <div class="chapter-head reveal">
+      <div class="num">Chapter 01</div>
+      <h2 id="c1">The Idea That Changes Everything</h2>
+      <p>A narrative walkthrough of regenerative compute — where the idea came from, what it solves, and why it works when everything else doesn't.</p>
+    </div>
+
+    <div class="narr">
+      <article class="narr-card reveal">
+        <div class="kicker">The Problem</div>
+        <h3>Free access to AI has always been someone else's problem</h3>
+        <p>Every AI platform that offers a free tier is secretly in trouble. The math doesn't work unless investors are covering the gap, advertisers are paying to access your attention, or the free tier is so crippled it barely functions. Company A subsidized free processing. Company B subsidizes free compute. Company C subsidized free until they couldn't. Free tiers have always been a loss leader — a marketing cost disguised as generosity.</p>
+        <p>The result is always the same: free tiers get cut, degraded, or paywalled the moment financial pressure rises. Users who built habits around free access get burned. The platform relationship was never sustainable — it was borrowed time on someone else's balance sheet.</p>
+        <div class="callout">The question no one was asking: What if the free tier could fund itself — automatically, continuously, from the activity of the platform itself?</div>
+      </article>
+
+      <article class="narr-card reveal">
+        <div class="kicker">The Insight</div>
+        <h3>Regenerative braking didn't invent energy — it recovered energy that was being lost</h3>
+        <p>When Toyota engineers designed the first Prius, they noticed something obvious in retrospect: every time a driver braked, kinetic energy was being converted to heat and thrown away. Friction brakes are thermodynamically catastrophic — they exist purely to destroy energy. The regenerative solution wasn't to add something new. It was to stop wasting what was already there.</p>
+        <p>SiskoAI's compute economics revealed an identical pattern. When a user accesses the platform's premium v2 compute layer — personalized AI sessions with memory, history, and custom personas — they pay a cost that is exactly double the raw infrastructure cost. That 100% margin isn't greed. It funds the creator who built the AI persona, and it funds platform operations. But after both are paid, there is a real, measurable share of value that could either disappear as profit extraction — or be captured and returned to the system.</p>
+        <div class="callout">Processing Blocks are the battery. Every premium transaction charges it. Every user on the platform can draw from it. The more the platform runs, the more everyone benefits — including people who have never paid a dollar.</div>
+      </article>
+
+      <article class="narr-card reveal">
+        <div class="kicker">Why It's Different</div>
+        <h3>This isn't a loyalty program. It's a structural property of the platform.</h3>
+        <p>Loyalty programs return value to the person who spent. Cashback rewards the buyer. Even staking rewards in crypto go to the participants who already have capital. These are all closed loops — the wealth circulates among the wealthy.</p>
+        <p>Regenerative compute is structurally different. The 50% platform share of every v2 interaction is divided equally across all registered users — including users who have never made a single transaction. The per-user share formula is simple: take the live pool balance, divide by the total number of registered users. That's your free compute entitlement, right now, this second.</p>
+        <p>This means that when SiskoAI grows — when more creators build personas, more users interact, more compute flows — every user's free entitlement increases. Growth is not a zero-sum redistribution. It expands the total available resource. The system is, in the truest sense of the word, regenerative.</p>
+      </article>
+
+      <article class="narr-card reveal">
+        <div class="kicker">Production Reality</div>
+        <h3>This is not a whitepaper. It is running right now.</h3>
+        <p>The regenerative compute engine is live at SiskoAI.com. Every request to the v2 compute API executes an atomic transaction: deducts the viewer's cost, rewards the creator, inserts a platform compute record, logs the billing mode, and updates the pool — in a single database transaction that cannot partially succeed. If any step fails, nothing moves. The ledger is always consistent.</p>
+        <p>The public monitor at SiskoAI shows the pool in real time: how much has been generated, how much has been used, what the per-user share is right now, and the live feed of transactions flowing through the system. There is no abstraction between the data and the display. What you see is what exists.</p>
+        <div class="callout">Reduced to practice. In patent language, this means the invention isn't just described — it works. The code runs. The database fills. The pool accumulates. The free tier is funded by the platform itself, as it operates, automatically.</div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<div class="term-strip" aria-hidden="true">
+  <span>// ECONOMICS ENGINE · V1 LAYER · V2 COMPUTE · PROCESSING BLOCKS ONLINE</span>
+</div>
+
+<!-- Chapter 02 -->
+<section id="loop" aria-labelledby="c2">
+  <div class="wrap">
+    <div class="chapter-head reveal">
+      <div class="num">Chapter 02</div>
+      <h2 id="c2">The Regenerative Loop: How Value Flows</h2>
+      <p>The three-layer economics model that makes self-sustaining free compute possible — and the positive feedback cycle that makes it get better as the platform grows.</p>
+    </div>
+
+    <div class="layers">
+      <div class="layer reveal">
+        <div class="badge">Layer 01</div>
+        <h4>API v1 — Base Compute</h4>
+        <div class="formula">C_v1 = tokens × price × 1.885×</div>
+        <p>The raw cost of an AI response: LLM tokens, server compute, bandwidth, memory. Multiplied by the combined provider and vendor overhead factor. This is the economic floor — what it actually costs to run the inference.</p>
+      </div>
+      <div class="layer reveal">
+        <div class="badge">Layer 02</div>
+        <h4>API v2 — Session Compute</h4>
+        <div class="formula">C_v2 = C_v1 × 2</div>
+        <p>Personalized AI sessions with persistent memory, conversation history, user preference doctrine, and custom persona behavior. The viewer pays exactly double the v1 cost. The margin funds both creator and platform.</p>
+      </div>
+      <div class="layer reveal">
+        <div class="badge">Layer 03</div>
+        <h4>The Split — Where It Gets Interesting</h4>
+        <div class="formula">Creator = C_v1 × 0.5   Platform = C_v1 × 0.5</div>
+        <p>The v2 margin (= v1 cost) is split equally: 50% to the persona creator as a reward for building something valuable, 50% to the platform. That platform share doesn't disappear — it becomes the compute pool.</p>
+      </div>
+    </div>
+
+    <div class="alloc reveal" aria-label="Allocation breakdown">
+      <div class="row">
+        <span>How Every v2 Dollar Is Allocated</span>
+        <span>50% → Infrastructure (v1) · 25% → Creator Reward · 25% → Compute Pool → Free Tier</span>
+      </div>
+      <div class="bars" role="img" aria-label="Allocation: 50% infrastructure, 25% creator, 25% pool">
+        <div class="b1"></div><div class="b2"></div><div class="b3"></div>
+      </div>
+      <div class="legend">
+        <span><i style="background:var(--brand-sky)"></i>v1 Infrastructure Cost</span>
+        <span><i style="background:var(--amber)"></i>Creator Reward (25% of v2)</span>
+        <span><i style="background:var(--green)"></i>Platform Compute Pool (25% of v2)</span>
+      </div>
+    </div>
+
+    <div class="cycle">
+      <div class="step reveal"><div class="n">1</div><h5>User Makes v2 Request</h5><p>Pays C_v2. Full cost logged atomically.</p></div>
+      <div class="step reveal"><div class="n">2</div><h5>Creator Rewarded</h5><p>C_v1 × 0.5 credited to persona owner immediately.</p></div>
+      <div class="step reveal"><div class="n">3</div><h5>Pool Grows</h5><p>C_v1 × 0.5 added to platform_compute ledger.</p></div>
+      <div class="step reveal"><div class="n">4</div><h5>Share Increases</h5><p>Pool ÷ users: every user's free entitlement rises.</p></div>
+      <div class="step reveal"><div class="n">5</div><h5>Free Users Engage</h5><p>More users join; more personas get built.</p></div>
+      <div class="step reveal"><div class="n">6</div><h5>More v2 Requests ↺</h5><p>Cycle accelerates. Pool grows faster.</p></div>
+    </div>
+  </div>
+</section>
+
+<div class="term-strip" aria-hidden="true">
+  <span>// FORMULA ENGINE · BILLING DECISION · POOL ALLOCATION · ATOMIC TRANSACTION</span>
+</div>
+
+<!-- Chapter 03 -->
+<section id="math" aria-labelledby="c3">
+  <div class="wrap">
+    <div class="chapter-head reveal">
+      <div class="num">Chapter 03</div>
+      <h2 id="c3">The Math Is Precise. Here's All of It.</h2>
+      <p>Every formula governing pool generation, per-user allocation, and billing path selection. No black boxes — the economics are fully transparent and computable from public data.</p>
+    </div>
+
+    <div class="formulas">
+      <div class="fcard reveal">
+        <div class="k">Cost Layer</div>
+        <h4>v1 Base Cost</h4>
+        <div class="eq">C_v1 = [(T_in/1K)×(P_in+$0.0005) + (T_out/1K)×(P_out+$0.0005)] × 1.885</div>
+        <p>T_in/T_out = actual token counts. P_in/P_out = model price per 1K. 1.885 = 1.45 provider × 1.30 vendor multiplier. $0.0005/1K compute overhead on both.</p>
+      </div>
+      <div class="fcard reveal">
+        <div class="k">Cost Layer</div>
+        <h4>v2 Session Cost</h4>
+        <div class="eq">C_v2 = C_v1 × 2</div>
+        <p>The viewer always pays exactly double the base infrastructure cost. The 100% margin funds creator + platform equally. Pre-authorization requires 2× estimated cost before the API call is made.</p>
+      </div>
+      <div class="fcard reveal">
+        <div class="k">Revenue Split</div>
+        <h4>Creator Reward</h4>
+        <div class="eq">Creator_reward = C_v1 × 0.50</div>
+        <p>Paid regardless of billing path. If the request is served from the free compute pool, the creator still earns their full reward — funded from the pool itself. Creator incentives never depend on how the viewer is billed.</p>
+      </div>
+      <div class="fcard reveal">
+        <div class="k">Revenue Split</div>
+        <h4>Platform Compute Share</h4>
+        <div class="eq">Platform_reward = C_v1 × 0.50</div>
+        <p>The platform's 50% of v2 margin is inserted into the platform_compute ledger as an "available" row. This is the seed capital for the free compute pool. It accumulates with every transaction, forever.</p>
+      </div>
+      <div class="fcard reveal">
+        <div class="k">Pool Mechanics</div>
+        <h4>Live Available Pool</h4>
+        <div class="eq">Pool_available = Σ(platform_compute) − Σ(free_usage TODAY)</div>
+        <p>The pool balance is always computed from authoritative source tables — never stored as a mutable counter. Daily consumption resets each morning; total accumulated pool never decreases. This creates a natural daily floor.</p>
+      </div>
+      <div class="fcard reveal">
+        <div class="k">User Allocation</div>
+        <h4>Per-User Free Share</h4>
+        <div class="eq">User_share = Pool_available ÷ COUNT(all users)</div>
+        <p>Computed at the moment of every request. If inactive users don't draw down the pool, active users' effective share is higher — their unused allocations remain in the pool. One active user can theoretically use the entire pool.</p>
+      </div>
+    </div>
+
+    <h3 class="chapter-tag reveal" style="margin-top:44px;display:block">// BILLING PATH DECISION ENGINE — Evaluated Per Request</h3>
+    <div class="gates">
+      <div class="gate free reveal">
+        <h5>Free Compute</h5>
+        <p><strong>IF</strong> User_share ≥ C_v1_estimated — Pool covers this request. User balance untouched. Creator still rewarded from pool.</p>
+        <div class="tick">Pool deducted ✓</div>
+      </div>
+      <div class="gate credit reveal">
+        <h5>Credit Billing</h5>
+        <p><strong>ELSE IF</strong> user.balance ≥ C_v2_estimated × 2 — Insufficient free compute. User balance is pre-authorized at 2× estimated cost and billed at actual cost post-response.</p>
+        <div class="tick">Balance deducted ✓</div>
+      </div>
+      <div class="gate rate reveal">
+        <h5>Rate Limited</h5>
+        <p><strong>ELSE</strong> — Neither free pool nor user balance is sufficient. No AI call is made. User receives an informative message: free compute is being generated; try again shortly or add balance.</p>
+        <div class="tick">No charge ✓</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="term-strip" aria-hidden="true">
+  <span>// POOL VISUALIZER · LIVE BLOCK GRID · INTERACTIVE DEMO</span>
+</div>
+
+<!-- Chapter 04 -->
+<section id="pool" aria-labelledby="c4">
+  <div class="wrap">
+    <div class="chapter-head reveal">
+      <div class="num">Chapter 04</div>
+      <h2 id="c4">Watch the Pool Breathe in Real Time</h2>
+      <p>The compute pool isn't a static number. It grows with every v2 transaction, shrinks as users draw free compute, and resets its daily consumption window each morning while keeping its total accumulated balance. This is a live system, not a ledger entry.</p>
+    </div>
+
+    <div class="pool">
+      <div class="pool-stats">
+        <div class="pstat reveal"><div class="n">22.8555</div><div class="lbl">Pool Available</div></div>
+        <div class="pstat reveal"><div class="n">0.228555</div><div class="lbl">Per-User Share</div></div>
+        <div class="pstat reveal"><div class="n">100</div><div class="lbl">Total Users</div></div>
+      </div>
+      <div class="pool-vis reveal" aria-label="Processing Blocks Pool">
+        <h4>Processing Blocks Pool</h4>
+        <div class="pool-bar">
+          <div class="fill"><span class="pct">91.5%</span></div>
+          <div class="used"></div>
+        </div>
+        <div class="pool-legend">
+          <span>Pool Total<b>24.9690</b></span>
+          <span>Used Today<b>2.1135</b></span>
+          <span>Available<b>22.8555</b></span>
+        </div>
+        <p class="mono" style="font-size:12px;color:var(--text-dim);margin-top:14px">// Static snapshot — live values on the SiskoAI public monitor</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="term-strip" aria-hidden="true">
+  <span>// WHO BENEFITS · CREATOR ECONOMY · FREE USER TIER · PLATFORM BUILDERS</span>
+</div>
+
+<!-- Chapter 05 -->
+<section id="benefits" aria-labelledby="c5">
+  <div class="wrap">
+    <div class="chapter-head reveal">
+      <div class="num">Chapter 05</div>
+      <h2 id="c5">Three Paths into the Regenerative Economy</h2>
+      <p>Whether you're building AI personas, using the platform daily, or integrating compute into your own product — there is a role in this system that pays you to participate.</p>
+    </div>
+
+    <div class="paths">
+      <article class="path reveal">
+        <div class="ico" aria-hidden="true">🧠</div>
+        <h3>For Creators<span>Build Personas. Earn Every Time They're Used.</span></h3>
+        <p>When you build a verified AI persona on SiskoAI and another user engages with it, you earn 25% of their v2 cost as a direct credit to your account — automatically, every time, for every interaction. The better your persona performs, the more you earn. Your income scales with platform usage.</p>
+        <ul>
+          <li>25% of every v2 interaction with your persona</li>
+          <li>Earnings are billing-path independent — free users still pay you</li>
+          <li>Real-time balance in your CPU Core dashboard</li>
+          <li>Credits reinvest into your own compute costs</li>
+        </ul>
+      </article>
+      <article class="path reveal">
+        <div class="ico" aria-hidden="true">⚡</div>
+        <h3>For Users<span>Access AI. Sometimes for Free.</span></h3>
+        <p>Every registered user on SiskoAI is entitled to an equal share of the live compute pool at the time of each request. When the pool is healthy — when the platform is active and generating — your share may cover your full request cost with no charge to your balance. The more the platform grows, the more free compute every user gets.</p>
+        <ul>
+          <li>Equal share of the live compute pool per request</li>
+          <li>Automatic — no coupons, no codes, no opt-in</li>
+          <li>Seamless fallback to balance when pool is low</li>
+          <li>Share grows as platform generates more compute</li>
+        </ul>
+      </article>
+      <article class="path reveal">
+        <div class="ico" aria-hidden="true">🔧</div>
+        <h3>For Builders<span>Integrate Compute. Watch It Self-Fund.</span></h3>
+        <p>Building a product on top of SiskoAI's compute layer means your users automatically benefit from the regenerative pool. You don't have to subsidize a free tier — the platform generates one for you, funded by the transactions flowing through your product. Your users get free access; you get loyalty without the cost.</p>
+        <ul>
+          <li>Platform generates free compute for your users</li>
+          <li>No subsidy budget needed — the pool is self-funded</li>
+          <li>Full API access with atomic billing guarantees</li>
+          <li>Public monitor for transparency to your stakeholders</li>
+        </ul>
+      </article>
+    </div>
+  </div>
+</section>
+
+<div class="term-strip" aria-hidden="true">
+  <span>// COMPARISON · LEGACY MODELS · REGENERATIVE ADVANTAGE</span>
+</div>
+
+<!-- Chapter 06 -->
+<section id="compare" aria-labelledby="c6">
+  <div class="wrap">
+    <div class="chapter-head reveal">
+      <div class="num">Chapter 06</div>
+      <h2 id="c6">How SiskoAI Compares to Every Other Model</h2>
+      <p>Four approaches to free access. Only one is structurally self-sustaining.</p>
+    </div>
+    <div class="compare reveal">
+      <table class="cmp">
+        <thead>
+          <tr><th>Property</th><th>Legacy Free Tiers</th><th class="good">SiskoAI Regenerative</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="prop">Free tier funding source</td><td class="legacy">Investor subsidy or ads</td><td class="good">Platform transaction margin</td></tr>
+          <tr><td class="prop">Free tier sustainability</td><td class="legacy">Requires ongoing external capital</td><td class="good">Self-sustaining — grows with platform</td></tr>
+          <tr><td class="prop">Free allocation grows with platform</td><td class="legacy">No — static or gets cut</td><td class="good">Yes — more activity = more free compute</td></tr>
+          <tr><td class="prop">Creator revenue model</td><td class="legacy">None or ad revenue share</td><td class="good">25% of every interaction, billing-path agnostic</td></tr>
+          <tr><td class="prop">Free tier survives financial pressure</td><td class="legacy">First to be cut in downturn</td><td class="good">Funded by activity — can't be cut without stopping platform</td></tr>
+          <tr><td class="prop">Public auditability</td><td class="legacy">None — proprietary black box</td><td class="good">Live public monitor with real-time data</td></tr>
+          <tr><td class="prop">User incentive alignment</td><td class="legacy">Platform vs user — zero sum</td><td class="good">Platform growth = user benefit — positive sum</td></tr>
+          <tr><td class="prop">Economic model</td><td class="legacy">Extraction</td><td class="good">Regenerative — value returned to system</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="term-strip" aria-hidden="true">
+  <span>// PRODUCTION STATUS · LIVE DATABASE · ATOMIC TRANSACTION LOG</span>
+</div>
+
+<!-- Chapter 07 -->
+<section id="production" aria-labelledby="c7">
+  <div class="wrap">
+    <div class="chapter-head reveal">
+      <div class="num">Chapter 07</div>
+      <h2 id="c7">This Is Not a Whitepaper. It's Running Now.</h2>
+      <p>The regenerative compute engine is live in production at SiskoAI. Not a proof of concept. Not a pilot. Every transaction flowing through the platform today is generating pool blocks, rewarding creators, and building free compute access for every user. The production artifacts are verifiable. The database schema is documented. The formulas are published. The monitor is public. There is no gap between the description and the implementation — the implementation is the description.</p>
+    </div>
+
+    <div class="artifacts">
+      <div class="art reveal"><div class="ico">⚙️</div><div class="nm">compute_boing_ai_engine.php</div><span class="st"><span class="dot"></span>LIVE</span></div>
+      <div class="art reveal"><div class="ico">🗄️</div><div class="nm">platform_compute table</div><span class="st"><span class="dot"></span>ACTIVE</span></div>
+      <div class="art reveal"><div class="ico">🗄️</div><div class="nm">free_compute_usage table</div><span class="st"><span class="dot"></span>ACTIVE</span></div>
+      <div class="art reveal"><div class="ico">📊</div><div class="nm">v_compute_pool_status view</div><span class="st"><span class="dot"></span>LIVE</span></div>
+      <div class="art reveal"><div class="ico">🖥️</div><div class="nm">monitor.html + monitor_api.php</div><span class="st"><span class="dot"></span>PUBLIC</span></div>
+    </div>
+
+    <div class="chapter-tag reveal" style="margin-bottom:10px">// compute_boing_ai_engine.php — BILLING PATH DECISION</div>
+<pre class="code reveal"><span class="c">/* ── FREE COMPUTE POOL CHECK ─────────────────── */</span>
+$pool_available  = max(0, floatval($pool_remaining));
+$user_free_share = ( $pool_available &gt; 0
+    ? round($pool_available / $total_users, 6)
+    : 0.0
+);
+
+<span class="c">/* Three-state billing decision */</span>
+$use_free_compute = <span class="k">false</span>;
+$use_balance      = <span class="k">false</span>;
+
+<span class="k">if</span> ($user_free_share &gt;= $estimated_cost) {
+    $use_free_compute = <span class="k">true</span>;           <span class="c">// ← FREE</span>
+} <span class="k">elseif</span> ($balance &gt;= ($estimated_cost * 2)) {
+    $use_balance = <span class="k">true</span>;                <span class="c">// ← CREDIT</span>
+} <span class="k">else</span> {
+    <span class="k">throw new</span> Exception(
+        <span class="s">'Free compute limit reached...'</span>
+    );                                  <span class="c">// ← REJECT</span>
+}</pre>
+
+    <a class="monitor-link" href="https://siskoai.com/monitor.html" rel="noopener">View Live Monitor →</a>
+  </div>
+</section>
+
+<div class="term-strip" aria-hidden="true">
+  <span>// ENROLLMENT · JOIN THE REGENERATIVE ECOSYSTEM · COMPUTE POOL OPEN</span>
+</div>
+
+<!-- Enroll -->
+<section id="enroll" aria-labelledby="ce">
+  <div class="wrap">
+    <div class="enroll reveal">
+      <span class="eyebrow">Join the Ecosystem Now</span>
+      <h2 id="ce">Your Compute Pool Share Is Being Generated Right Now. Start Drawing From It.</h2>
+      <p class="lede">Every second SiskoAI runs, platform compute is accumulating. Your equal share of that pool exists whether you've claimed it or not. It doesn't roll forward — unused shares stay in the pool for active users. The time to join is now.</p>
+
+      <div class="enroll-paths">
+        <div class="epath">
+          <div class="ico">🧠</div>
+          <div class="k">Creator Path</div>
+          <h4>Build &amp; Earn</h4>
+          <p>Create AI personas. Earn 25% of every interaction, in real time, automatically.</p>
+          <a href="#">Start building →</a>
+        </div>
+        <div class="epath">
+          <div class="ico">⚡</div>
+          <div class="k">User Path</div>
+          <h4>Use &amp; Save</h4>
+          <p>Access AI personas. Draw from the free compute pool before spending your balance.</p>
+          <a href="#">Start using →</a>
+        </div>
+        <div class="epath">
+          <div class="ico">🔧</div>
+          <div class="k">Builder Path</div>
+          <h4>Integrate &amp; Scale</h4>
+          <p>Build products on regenerative compute. Your users get free access — funded by the platform.</p>
+          <a href="#">View API docs →</a>
+        </div>
+      </div>
+
+      <a class="btn btn-primary enroll-btn" href="#">JOIN SISKOAI — CLAIM YOUR COMPUTE SHARE →</a>
+
+      <div class="trust" aria-label="Trust highlights">
+        <span class="chip"><span class="dot"></span>Free tier available immediately</span>
+        <span class="chip"><span class="dot"></span>No cash payout risk</span>
+        <span class="chip"><span class="dot"></span>Closed-loop credit system</span>
+        <span class="chip"><span class="dot"></span>Public monitor — full transparency</span>
+        <span class="chip"><span class="dot"></span>Production validated</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="wrap foot-inner">
+    <div class="brand">SISKOAI <span style="color:var(--text-dim);font-weight:400;margin-left:8px">CPU Core</span></div>
+    <nav class="foot-links" aria-label="Footer">
+      <a href="#concept">The Concept</a>
+      <a href="#math">The Math</a>
+      <a href="#enroll">Enroll</a>
+      <a href="https://siskoai.com/monitor.html" rel="noopener">Live Monitor</a>
+      <a href="#enroll">Get Started →</a>
+    </nav>
+    <div class="copy">© SiskoAI · Regenerative Compute Engine · Secure · Scalable · Self-Sustaining</div>
+  </div>
+</footer>
+
+<script>
+  // Reveal on scroll
+  (function(){
+    var mql = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (mql.matches) {
+      document.querySelectorAll('.reveal').forEach(function(el){el.classList.add('in');});
+      return;
+    }
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    }, {threshold: 0.12, rootMargin: '0px 0px -40px 0px'});
+    document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});
+
+    // Hero lines stagger
+    document.querySelectorAll('.hero .line').forEach(function(el, i){
+      el.style.transitionDelay = (0.08 * i) + 's';
+    });
+  })();
+</script>
+</body>
+</html>
